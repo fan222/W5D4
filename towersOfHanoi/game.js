@@ -1,21 +1,9 @@
-const readline = require('readline');
-
-const reader = readline.createInterface({
-  // it's okay if this part is magic; it just says that we want to
-  // 1. output the prompt to the standard output (console)
-  // 2. read input from the standard input (again, console)
-
-  input: process.stdin,
-  output: process.stdout
-});
-
-
 class Game {
   constructor (board = [[3,2,1],[],[]]) {
     this.towers = board;
   }
 
-  promptMove (callback, completionCallback) {
+  promptMove (reader, callback, completionCallback) {
     console.log(this.towers);
     reader.question("Which tower do you want to move from, and which do you want to move it to? ", (answer) => {
       answer = answer.split(",");
@@ -68,8 +56,8 @@ class Game {
     return (tower0.length === 0 && (tower1.length === 3 || tower2.length === 3));
   }
 
-  run (completionCallback) {
-    this.promptMove((startTowerIdx, endTowerIdx) => {
+  run (reader, completionCallback) {
+    this.promptMove(reader, (startTowerIdx, endTowerIdx) => {
       if (this.move(startTowerIdx, endTowerIdx)) {
         console.log(this.print());
       } else {
@@ -80,19 +68,9 @@ class Game {
     }, completionCallback);
   }
 
-  play () {
-    this.run(() => reader.close());
-  }
+  // play (reader) {
+  //   this.run(() => reader.close(), reader);
+  // }
 }
 
-let game = new Game([[],[3,2],[1]]);
-
-// game.promptMove(console.log);
-// console.log(game.isValidMove(0,1));
-// console.log(game.move(0,2));
-// console.log(game.print());
-// console.log(game.isWon());
-// console.log(game.promptMove(game.testMove.bind(game)));
-// game.run(() => reader.close());
-
-game.play();
+module.exports = Game;
