@@ -1,45 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const readline = require('readline');
 
 const reader = readline.createInterface({
@@ -51,57 +9,58 @@ const reader = readline.createInterface({
   output: process.stdout
 });
 
-function addNumbers(sum, numLeft, completionCallBack) {
-  if (numLeft > 0) {
-    reader.question("Enter a number: ", num => {
-      sum += parseInt(num);
-      console.log(sum);
+function askIfGreaterThan(el1, el2, callback) {
+  reader.question(`Is ${el1} bigger than ${el2}? `, answer => {
+    if (answer === "yes") {
+      callback(true);
 
-      addNumbers(sum, numLeft - 1, completionCallBack);
-    });
-  } else if (numLeft === 0) {
-    completionCallBack(sum);
-    reader.close();
+    } else if (answer === "no") {
+      callback(false);
+
+    } else {
+      console.log(`Please answer 'yes' or no'`);
+
+      askIfGreaterThan(el1, el2, callback);
+    }
+  });
+}
+
+// askIfGreaterThan(1,2, (answer) => console.log(answer));
+
+function innerBubbleSortLoop(arr, i, madeAnySwaps, outerBubbleSortLoop) {
+  if (i < arr.length - 1) {
+    askIfGreaterThan(arr[i], arr[i + 1], (isGreaterThan) => {
+      if (isGreaterThan) {
+        let temp = arr[i];
+        arr[i] = arr[i + 1];
+        arr[i + 1] = temp;
+
+        madeAnySwaps = true;
+      }
+      innerBubbleSortLoop(arr, i + 1, madeAnySwaps, outerBubbleSortLoop);
+    })
+  } else {
+    outerBubbleSortLoop(madeAnySwaps);
   }
 }
 
-// addNumbers(0, 3, sum => console.log(`Total Sum: ${sum}`));
+// innerBubbleSortLoop([1,3,1,6,4], 0, false, () => console.log(`in outer bubble sort`));
 
 
-
-class Clock {
-  constructor() {
-    // 1. Create a Date object.
-    let date = new Date();
-
-    // 2. Store the hours, minutes, and seconds.
-    this.hours = date.getHours();
-    this.mins = date.getMinutes();
-    this.secs = date.getSeconds();
-
-    // 3. Call printTime.
-    this.printTime();
-
-    // 4. Schedule the tick at 1 second intervals.
-    setInterval(this._tick.bind(this), 1000);
+function absurdBubbleSort(arr, sortCompletionCallback) {
+  function outerBubbleSortLoop(madeAnySwaps) {
+    if (madeAnySwaps) {
+      innerBubbleSortLoop(arr, 0, false, outerBubbleSortLoop);
+    } else {
+      sortCompletionCallback(arr);
+    }
   }
 
-  printTime() {
-    // Format the time in HH:MM:SS
-    let timeString = `${this.hours}:${this.mins}:${this.secs}`;
-
-    // Use console.log to print it.
-    console.log(timeString);
-  }
-
-  _tick() {
-    // 1. Increment the time by one second.
-    this.secs += 1;
-
-    // 2. Call printTime.
-    this.printTime();
-  }
-
+  outerBubbleSortLoop(true);
 }
 
-// let clock = new Clock();
+absurdBubbleSort([3, 2, 1], function (arr) {
+  console.log(`Sorted array: ${JSON.stringify(arr)}`);
+
+  reader.close();
+});
