@@ -3,24 +3,6 @@ class Game {
     this.towers = board;
   }
 
-  promptMove (reader, callback, completionCallback) {
-    console.log(this.towers);
-    reader.question("Which tower do you want to move from, and which do you want to move it to? ", (answer) => {
-      answer = answer.split(",");
-
-      let startTower = parseInt(answer[0]);
-      let endTower = parseInt(answer[1]);
-
-      let win = callback(startTower, endTower);
-      if (win) {
-        this.print();
-        console.log("You won");
-        completionCallback();
-      } else {
-        this.run(completionCallback);
-      }
-    })
-  }
 
   isValidMove(startTowerIdx, endTowerIdx) {
     if (startTowerIdx < 0 || startTowerIdx > 2 ||
@@ -58,19 +40,33 @@ class Game {
 
   run (reader, completionCallback) {
     this.promptMove(reader, (startTowerIdx, endTowerIdx) => {
-      if (this.move(startTowerIdx, endTowerIdx)) {
-        console.log(this.print());
-      } else {
+      if (!this.move(startTowerIdx, endTowerIdx)) {
         console.log("Invalid move!");
       }
 
-      return this.isWon();
-    }, completionCallback);
+      this.print();
+      if (this.isWon()) {
+        console.log("You won");
+        completionCallback();
+      } else {
+        this.run(completionCallback);
+      }
+    });
   }
 
-  // play (reader) {
-  //   this.run(() => reader.close(), reader);
-  // }
+  promptMove (reader, callback) {
+    console.log(this.print());
+    reader.question("Which tower do you want to move from, and which do you want to move it to? ", (answer) => {
+      answer = answer.split(",");
+
+      let startTower = parseInt(answer[0]);
+      let endTower = parseInt(answer[1]);
+
+      callback(startTower, endTower);
+
+    })
+  }
+
 }
 
 module.exports = Game;
